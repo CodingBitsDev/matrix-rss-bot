@@ -1,5 +1,10 @@
 import { MatrixAuth } from "matrix-bot-sdk";
 import { prompt } from "./prompt";
+import * as fs from "fs";
+const path = require('path');
+const appRoot = path.resolve(__dirname);
+
+
 
 async function main() {
   try{
@@ -18,7 +23,15 @@ async function main() {
     const authFunc = type == "login" ? auth.passwordLogin.bind(auth) : auth.passwordRegister.bind(auth);
     const client = await authFunc(userName, password);
 
-    console.log("Sucess. Copy this access token to your .env: ", client.accessToken);
+
+    const envPath = appRoot + "/../.env"
+    if(fs.existsSync(envPath)) fs.unlinkSync(envPath);
+    const file = fs.createWriteStream(envPath)
+    file.write(`ACCESS_TOKEN=${client.accessToken}\n`)
+    file.write(`HOST_SERVER=${hostServer}\n`)
+    file.end();
+
+    console.log("Sucess. New .env file creatged");
   } catch(e){
     console.log("ERROR: Something went wrong. Please try again.\n", e)
     console.log("\n");
