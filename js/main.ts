@@ -15,6 +15,7 @@ const storage = new SimpleFsStorageProvider("gpn-bot.json");
 const cryptoProvider = new RustSdkCryptoStorageProvider("gpn-bot-crypto");
 
 const client = new MatrixClient(homeserverUrl, token, storage, cryptoProvider);
+global.client = client;
 AutojoinRoomsMixin.setupOnClient(client);
 
 // Before we start the bot, register our command handler

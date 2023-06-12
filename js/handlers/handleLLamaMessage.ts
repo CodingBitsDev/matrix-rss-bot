@@ -60,10 +60,9 @@ function canMerge(event1: MessageEvent<any> | undefined, event2: MessageEvent<an
 }
 
 async function handleEvent(client: MatrixClient, event: MessageEvent<any>, history: string[]){
-  const promots = [];
   const user = await getUserData(client, event.sender);
   history.push(await makeMessagePrompt(user.displayname, event.content.body));
 
-  history.slice(5)
-
+  const promots = history.slice(-5);
+  console.log("### prompts", history, promots, await makeMessagePrompt(user.displayname, event.content.body))
 }
