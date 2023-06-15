@@ -10,8 +10,7 @@ declare global {
 
 
 function main(){
-  global.APP = {
-    matrixClient: initMatrixBot(),
-  }
+  global.APP = {};
+  global.APP.matrixClient = initMatrixBot();
 }
 main();
