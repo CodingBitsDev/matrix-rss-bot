@@ -1,4 +1,6 @@
-# gpn21-matrix-bot
+# Matrix-Whatsapp-Bot
+
+# WIP
 
 ## How to run
 
