@@ -4,5 +4,4 @@ export function makeMessagePrompt(name: string, message: string){
 
 export function sendPrompot(messages: string[]){
   console.log("### sending", messages);
-
 }

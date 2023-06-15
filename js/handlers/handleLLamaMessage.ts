@@ -1,7 +1,7 @@
 import { MatrixClient, MatrixEvent, MessageEvent } from "matrix-bot-sdk";
 import { debounce } from "lodash";
 import { UserProfile, getUserData } from "../userLoader";
-import { makeMessagePrompt } from "./prompt-system";
+import { makeMessagePrompt, sendPrompot } from "./prompt-system";
 
 const MESSAGE_WAIT_TIME = 5000;
 
@@ -64,5 +64,5 @@ async function handleEvent(client: MatrixClient, event: MessageEvent<any>, histo
   history.push(await makeMessagePrompt(user.displayname, event.content.body));
 
   const promots = history.slice(-5);
-  console.log("### prompts", history, promots, await makeMessagePrompt(user.displayname, event.content.body))
+  sendPrompot(promots)
 }
