@@ -134,3 +134,4 @@ gpn-bot-crypto/
 gpn-bot.json
 .wwebjs_auth/
 .wwebjs_cache/
+testMessages.json
