@@ -1,6 +1,6 @@
 import { MatrixClient, MatrixEvent, MessageEvent } from "matrix-bot-sdk";
 import { debounce } from "lodash";
-import { UserProfile, getUserData } from "../userLoader";
+import { UserProfile, getUserData } from "../../userLoader";
 import { makeMessagePrompt, sendPrompot } from "./prompt-system";
 
 const MESSAGE_WAIT_TIME = 5000;

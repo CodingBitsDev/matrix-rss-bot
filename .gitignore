@@ -132,3 +132,5 @@ dist
 #Project relevant
 gpn-bot-crypto/
 gpn-bot.json
+.wwebjs_auth/
+.wwebjs_cache/
