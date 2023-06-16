@@ -1,6 +1,6 @@
-import { MatrixClient } from "matrix-bot-sdk";
+import { MatrixBot } from "../matrixBot";
 
-export function handleDecryptionErrors(client: MatrixClient, roomId: string, event: any, error: Error){
+export function handleDecryptionErrors(client: MatrixBot, roomId: string, event: any, error: Error){
   console.log("### decryption", roomId, event, error)
   // client.forgetRoom(roomId);
 }

@@ -1,9 +1,15 @@
-import { Client as WhatsappClient, LocalAuth } from "whatsapp-web.js";
+import { Client, GroupChat, LocalAuth, PrivateChat } from "whatsapp-web.js";
 import { initHandlers } from "./handlers";
 
-export { Client as WhatsappClient} from "whatsapp-web.js";
+type Chat = PrivateChat | GroupChat;
+
+export interface WhatsappClient extends Client{
+  chats?: Map<string, Chat>;
+  ready?: boolean,
+}
+
 export function initWhatsappbot() : WhatsappClient {
-  const client = new WhatsappClient({
+  const client = new Client({
     authStrategy: new LocalAuth()
   });
 
@@ -11,5 +17,5 @@ export function initWhatsappbot() : WhatsappClient {
 
   client.initialize();
 
-  return client
+  return client;
 }

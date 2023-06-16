@@ -9,7 +9,13 @@ export function initAuthHandlers(client: WhatsappClient){
   });
 
   client.on('ready', async () => {
-      console.log('Client is ready!');
+    const rawChats = await APP.whatsappClient.getChats();
+    const chats = new Map()
+    rawChats.forEach((chat) => {
+      chats.set(`${chat.id.user}@${chat.id.server}`, chat)
+    })
+    APP.whatsappClient.chats = chats;
+    APP.whatsappClient.ready = true;
+    console.log('Client is ready!');
   });
-  
 }

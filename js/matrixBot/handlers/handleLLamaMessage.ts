@@ -1,14 +1,15 @@
-import { MatrixClient, MatrixEvent, MessageEvent } from "matrix-bot-sdk";
+import { MatrixEvent, MessageEvent } from "matrix-bot-sdk";
 import { debounce } from "lodash";
 import { UserProfile, getUserData } from "../../userLoader";
 import { makeMessagePrompt, sendPrompot } from "./prompt-system";
+import { MatrixBot } from "../matrixBot";
 
 const MESSAGE_WAIT_TIME = 5000;
 
 const messageQueueMap : Map<string,MessageEvent<any>[]> = new Map();
 const queueHandlers : Map<string,Promise<unknown>> = new Map();
 const chatPromptHistory : Map<string, string[]> = new Map();
-export async function handleLLamaMessage(client: MatrixClient, roomId: string, event: MessageEvent<any>) {
+export async function handleLLamaMessage(client: MatrixBot, roomId: string, event: MessageEvent<any>) {
   if(!shouldHandle(client, roomId, event)) return;
   let queue = messageQueueMap.get(roomId);
   if(!queue){
@@ -39,7 +40,7 @@ export async function handleLLamaMessage(client: MatrixClient, roomId: string, e
   } 
 }
 
-function shouldHandle(client: MatrixClient, roomId: string, event: MessageEvent<any>){
+function shouldHandle(client: MatrixBot, roomId: string, event: MessageEvent<any>){
   //TODO Implement when event should be handled
   return true
 }
@@ -59,7 +60,7 @@ function canMerge(event1: MessageEvent<any> | undefined, event2: MessageEvent<an
   return true;
 }
 
-async function handleEvent(client: MatrixClient, event: MessageEvent<any>, history: string[]){
+async function handleEvent(client: MatrixBot, event: MessageEvent<any>, history: string[]){
   const user = await getUserData(client, event.sender);
   history.push(await makeMessagePrompt(user.displayname, event.content.body));
 

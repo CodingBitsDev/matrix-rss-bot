@@ -1,9 +1,8 @@
-import { MatrixClient } from "matrix-bot-sdk";
-import { initMatrixBot } from "./matrixBot/matrixBot";
+import { MatrixBot, initMatrixBot } from "./matrixBot/matrixBot";
 import { WhatsappClient, initWhatsappbot } from "./whatsappBot/whatsappBot";
 
 interface APP {
-  matrixClient?: MatrixClient;
+  matrixClient?: MatrixBot;
   whatsappClient?: WhatsappClient;
 }
 declare global {

@@ -4,7 +4,12 @@ import { initHandler } from "./handlers/index";
 import { config } from "dotenv";
 config();
 
-export function initMatrixBot() : MatrixClient {
+export interface MatrixBot extends MatrixClient{
+  matrixUser: string;
+
+}
+
+export function initMatrixBot() : MatrixBot {
   // This will be the URL where clients can reach your homeserver. Note that this might be different
   // from where the web/chat interface is hosted. The server must support password registration without
   // captcha or terms of service (public servers typically won't work).
@@ -16,7 +21,13 @@ export function initMatrixBot() : MatrixClient {
   const storage = new SimpleFsStorageProvider("gpn-bot.json");
   const cryptoProvider = new RustSdkCryptoStorageProvider("gpn-bot-crypto");
 
-  const client = new MatrixClient(homeserverUrl, token, storage, cryptoProvider);
+  const client = new MatrixClient(homeserverUrl, token, storage, cryptoProvider) as MatrixBot;
+  client.matrixUser = process.env.MATRIX_USER;
+  if(!client.matrixUser) {
+    console.error("A Matrix User was not set. Please run 'npn run setup' first.")
+    process.exit();
+  }
+
   global.client = client;
   AutojoinRoomsMixin.setupOnClient(client);
 
