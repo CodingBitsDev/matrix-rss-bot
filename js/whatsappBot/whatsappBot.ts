@@ -1,5 +1,5 @@
 import { Client as WhatsappClient, LocalAuth } from "whatsapp-web.js";
-import * as qrCode from "qrcode-terminal"
+import { initHandlers } from "./handlers";
 
 export { Client as WhatsappClient} from "whatsapp-web.js";
 export function initWhatsappbot() : WhatsappClient {
@@ -7,21 +7,7 @@ export function initWhatsappbot() : WhatsappClient {
     authStrategy: new LocalAuth()
   });
 
-  client.on('qr', (qr) => {
-    // Generate and scan this code with your phone
-    console.log('QR RECEIVED', qr);
-    qrCode.generate(qr, {small: true})
-  });
-
-  client.on('ready', () => {
-      console.log('Client is ready!');
-  });
-
-  client.on('message', msg => {
-    if (msg.body == '!ping') {
-        msg.reply('pong');
-    }
-  });
+  initHandlers(client);
 
   client.initialize();
 
