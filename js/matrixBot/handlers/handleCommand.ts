@@ -5,13 +5,14 @@ import { makeMessagePrompt, sendPrompot } from "./prompt-system";
 import { MatrixBot } from "../matrixBot";
 import * as commands from "./commands/index"
 
+type CommandResult = boolean | Error
 export interface Command {
   name: string,
   description: string,
   command: string,
   params?: Param[],
   optionalParams?: OptionalParam[],
-  onTrigger: (roomId:  string, event: MessageEvent<any>, msg: string) => boolean | Error;
+  onTrigger: (roomId:  string, event: MessageEvent<any>, msg: string) => CommandResult | Promise<CommandResult>;
 }
 
 type ParamType = "string" | "number";
@@ -50,6 +51,7 @@ export async function handleCommands(roomId: string, event: MessageEvent<any>) {
     return;
   };
   let error = null;
+  APP.matrixClient.setTyping(roomId, true, 30000)
   try {
     let result = command.onTrigger(roomId, event, msg)
     if(result instanceof Promise) result = await result;
@@ -61,6 +63,7 @@ export async function handleCommands(roomId: string, event: MessageEvent<any>) {
   } catch(e){
     error = e;
   }
+  APP.matrixClient.setTyping(roomId, false, 0)
   if(!error) return;
   console.error("Error in command: ", firstWord, error)
   APP.matrixClient.sendMessage(roomId, {body: `[ERROR] There has been an error in command: ${firstWord}: ${JSON.stringify(error)}`})
