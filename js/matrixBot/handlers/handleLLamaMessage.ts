@@ -7,7 +7,7 @@ import { MatrixBot } from "../matrixBot";
 const MESSAGE_WAIT_TIME = 5000;
 
 export async function initHandleLLamaMessage(client: MatrixBot){
-  client.on("room.message", (roomId: string, event: MessageEvent<any>) => handleLLamaMessage(roomId, event));
+  // client.on("room.message", (roomId: string, event: MessageEvent<any>) => handleLLamaMessage(roomId, event));
 }
 
 const messageQueueMap : Map<string,MessageEvent<any>[]> = new Map();
@@ -15,7 +15,6 @@ const queueHandlers : Map<string,Promise<unknown>> = new Map();
 const chatPromptHistory : Map<string, string[]> = new Map();
 export async function handleLLamaMessage(roomId: string, event: MessageEvent<any>) {
   const client = APP.matrixClient;
-  console.log("### received", roomId, event);
   if(!shouldHandle(roomId, event)) return;
   let queue = messageQueueMap.get(roomId);
   if(!queue){
