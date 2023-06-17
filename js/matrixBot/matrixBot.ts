@@ -2,11 +2,15 @@
 import { MatrixAuth, MatrixClient, AutojoinRoomsMixin, SimpleFsStorageProvider, RustSdkCryptoStorageProvider } from "matrix-bot-sdk";
 import { initHandler } from "./handlers/index";
 import { config } from "dotenv";
+import { getUserData } from "../userLoader";
+import { RoomHandler, initRoomHandler } from "./rooomHandler";
 config();
 
 export interface MatrixBot extends MatrixClient{
+  ready: boolean;
   matrixUser: string;
-
+  roomHandler: RoomHandler;
+  getUserData: (userId) => Promise<any>;
 }
 
 export function initMatrixBot() : MatrixBot {
@@ -22,11 +26,14 @@ export function initMatrixBot() : MatrixBot {
   const cryptoProvider = new RustSdkCryptoStorageProvider("gpn-bot-crypto");
 
   const client = new MatrixClient(homeserverUrl, token, storage, cryptoProvider) as MatrixBot;
+  client.ready = false;
   client.matrixUser = process.env.MATRIX_USER;
   if(!client.matrixUser) {
     console.error("A Matrix User was not set. Please run 'npn run setup' first.")
     process.exit();
   }
+  client.getUserData = getUserData;
+  initRoomHandler(client)
 
   global.client = client;
   AutojoinRoomsMixin.setupOnClient(client);
@@ -35,7 +42,11 @@ export function initMatrixBot() : MatrixBot {
   initHandler(client);
 
   // Now that everything is set up, start the bot. This will start the sync loop and run until killed.
-  client.start().then(() => console.log("Bot started!"));
+  client.start().then(() => {
+    client.ready = true;
+    client.emit("ready");
+    console.log("Bot started!") 
+  });
 
   return client
 }

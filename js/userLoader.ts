@@ -7,9 +7,9 @@ export interface UserProfile {
 
 const userList : Map<string, UserProfile> = new Map();
 
-export async function getUserData(client: MatrixBot, userId: string){
+export async function getUserData(userId: string){
   if(userList.get(userId)) return userList.get(userId);
-  const user = await client.getUserProfile(userId);
+  const user = await this.getUserProfile(userId);
   userList.set(userId, user);
   return user;
 }

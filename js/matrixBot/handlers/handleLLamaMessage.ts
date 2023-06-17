@@ -6,11 +6,17 @@ import { MatrixBot } from "../matrixBot";
 
 const MESSAGE_WAIT_TIME = 5000;
 
+export async function initHandleLLamaMessage(client: MatrixBot){
+  client.on("room.message", (roomId: string, event: MessageEvent<any>) => handleLLamaMessage(roomId, event));
+}
+
 const messageQueueMap : Map<string,MessageEvent<any>[]> = new Map();
 const queueHandlers : Map<string,Promise<unknown>> = new Map();
 const chatPromptHistory : Map<string, string[]> = new Map();
-export async function handleLLamaMessage(client: MatrixBot, roomId: string, event: MessageEvent<any>) {
-  if(!shouldHandle(client, roomId, event)) return;
+export async function handleLLamaMessage(roomId: string, event: MessageEvent<any>) {
+  const client = APP.matrixClient;
+  console.log("### received", roomId, event);
+  if(!shouldHandle(roomId, event)) return;
   let queue = messageQueueMap.get(roomId);
   if(!queue){
     queue = [];
@@ -32,7 +38,7 @@ export async function handleLLamaMessage(client: MatrixBot, roomId: string, even
 
           const history = chatPromptHistory.get(roomId) || [];
           if(!chatPromptHistory.get(roomId)) chatPromptHistory.set(roomId, history);
-          await handleEvent(client, mergedEvents[i], history);
+          await handleEvent(mergedEvents[i], history);
         }
         queueHandlers.delete(roomId);
       }, MESSAGE_WAIT_TIME)
@@ -40,7 +46,7 @@ export async function handleLLamaMessage(client: MatrixBot, roomId: string, even
   } 
 }
 
-function shouldHandle(client: MatrixBot, roomId: string, event: MessageEvent<any>){
+function shouldHandle(roomId: string, event: MessageEvent<any>){
   //TODO Implement when event should be handled
   return true
 }
@@ -60,8 +66,8 @@ function canMerge(event1: MessageEvent<any> | undefined, event2: MessageEvent<an
   return true;
 }
 
-async function handleEvent(client: MatrixBot, event: MessageEvent<any>, history: string[]){
-  const user = await getUserData(client, event.sender);
+async function handleEvent(event: MessageEvent<any>, history: string[]){
+  const user = await APP.matrixClient.getUserData(event.sender)
   history.push(await makeMessagePrompt(user.displayname, event.content.body));
 
   const promots = history.slice(-5);
