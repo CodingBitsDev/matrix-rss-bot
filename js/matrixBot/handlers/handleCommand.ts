@@ -10,6 +10,7 @@ export interface Command {
   name: string,
   description: string,
   command: string,
+  example?: string,
   params?: Param[],
   optionalParams?: OptionalParam[],
   namedParams?: NamedParam[],
@@ -30,7 +31,7 @@ export interface OptionalParam extends Param{
 }
 
 export interface NamedParam extends Param{
-  initator: string //e.q.: -i 
+  initiator: string //e.q.: -i 
 }
 
 const commandMap : Map<string, Command> = new Map();
@@ -43,7 +44,6 @@ export async function iniHandleCommand(client: MatrixBot) {
 }
 
 export async function handleCommands(roomId: string, event: MessageEvent<any>) {
-  console.log("### event", event)
   if(event.sender != APP.matrixClient.matrixUser) return;
   if(event.content.msgtype != "m.text") return;
   const msg = event.content.body;

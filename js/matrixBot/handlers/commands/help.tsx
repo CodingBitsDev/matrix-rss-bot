@@ -8,7 +8,7 @@ export const helpCommand : Command = {
   command: "!help",
   onTrigger: async (roomId: string, event: MessageEvent<any>, msg: string) => {
     console.log("###", "helpCalled", roomId, event);
-    await APP.matrixClient.sendHtmlText(roomId, makeAnswerString(roomId, event))
+    await APP.matrixClient.sendHtmlText(roomId, makeAnswerString(roomId, event, msg))
     return true
   },
   optionalParams: [
@@ -18,28 +18,61 @@ export const helpCommand : Command = {
       type: "string",
       optional: true,
     },
-  ]
+  ],
 }
 
-function makeAnswerString(roomId: string, event: MessageEvent<any>) : string {
-  let commandList = Object.values(commands).sort((command1, command2) => command1.command.localeCompare(command2.command))
+function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : string {
   let result = ``;
-  result += `<h1>${APP.name}</h1>`
-  result += `Thank you for using ${APP.name}. The following commands can be used`
-  result += `<ul>`
-  commandList.forEach(command => {
-    result += `<li>`;
-    const params = [
+  let commandList = Object.values(commands).sort((command1, command2) => command1.command.localeCompare(command2.command))
+  const params = msg.split(" ").slice(1);
+  if(!params[0]){
+    result += `<h1>${APP.name}</h1>`
+    result += `<p>Thank you for using ${APP.name}. The following commands can be used:</p>`
+    result += `<ul>`
+    commandList.forEach(command => {
+      result += `<li>`;
+      const params = [
+        ...(command.params || []),
+        ...(command.optionalParams || []),
+        ...(command.namedParams || []),
+      ].map(param => makeShortParamString(roomId, event, param)).join(" ");
+      result += `<b>${command.command}</b>${params && " " + params}: <br> ${command.description}`;
+      result += `</li>`;
+    })
+    result += `</ul>`
+    result += `<br>`
+    result += `For more information about a spcific command. Run <b>!help [comand]</b>.`
+  } else {
+    const command = commandList.find(c => c.command == params[0])
+    result += `<h1>${APP.name}</h1>`
+    if(!command) {
+      result += `<p>Command <b>${params[0]}</b> does not exist. Did you write it correctly?</p>`
+      result += `<p>If you are looking for general help or a list of commands try typing <b>!help</b> without any param.`
+      return result;
+    }
+    const paramListShort = [
       ...(command.params || []),
       ...(command.optionalParams || []),
       ...(command.namedParams || []),
     ].map(param => makeShortParamString(roomId, event, param)).join(" ");
-    result += `<b>${command.command}</b>${params && " " + params}: <br> ${command.description}`;
-    result += `</li>`;
-  })
-  result += `</ul>`
-  result += `<br>`
-  result += `For more information about a spcific command. Run <b>!help [comand]</b>.`
+    result += `<p>Command: <b>${command.name} (${command.command})</p>`
+    result += `<p>Usage: ${command.command} ${paramListShort}</p>`
+    result += `<p>${command.description}</p>`
+    result += `<p><b>RoomType:</b> ${command.roomType || "all"}</p>`
+    const paramList = [
+      ...(command.params || []),
+      ...(command.optionalParams || []),
+      ...(command.namedParams || []),
+    ].map(param => makeLongParamString(roomId, event, param))
+    if(paramList.length){
+      result += "<p><b>Params:</b>"
+      result += "<ul>"
+      paramList.forEach(pString => {
+        result += `<li>${pString}</li>`
+      })
+      result += "</ul></p>"
+    }
+  }
 
   return result;
 }
@@ -47,7 +80,32 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>) : string {
 function makeShortParamString(roomId: string, event: MessageEvent<any>, param: Param | OptionalParam | NamedParam) : string {
   let result = ``;
   if( (param as OptionalParam ).optional ) result += `[${param.name}]`;
-  else if( (param as NamedParam ).initator ) result += `[${( param as NamedParam ).initator } ${param.name}]`;
-  else result += `${param.name}]`;
+  else if( (param as NamedParam ).initiator ) result += `[${( param as NamedParam ).initiator } ${param.name}]`;
+  else result += `${param.name}`;
+  return result;
+}
+
+function makeLongParamString(roomId: string, event: MessageEvent<any>, param: Param | OptionalParam | NamedParam) : string {
+  let result = ``;
+  const initiator = (param as NamedParam ).initiator;
+  result += `<b>${initiator ? initiator + " " : ""}${param.name}</b> : `;
+  result += `${param.description}`
+  if( (param as OptionalParam ).optional ) {
+    result += `<br><b>Required</b>: No`
+    result += `<br><b>Type</b>: ${param.type}`
+    result += "<br><br>"
+  }
+  else if( initiator ) {
+    result += `<br><b>Required</b>: No`
+    result += `<br><b>NamedParameter</b>: Yes`
+    result += `<br><b>Type</b>: ${param.type}`
+    result += `<br><b>Initiator</b>: ${initiator}`
+    result += "<br><br>"
+  }
+  else {
+    result += `<br><b>Required</b>: Yes`
+    result += `<br><b>Type</b>: ${param.type}`
+    result += "<br><br>"
+  }
   return result;
 }
