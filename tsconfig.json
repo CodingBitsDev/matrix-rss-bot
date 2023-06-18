@@ -1,7 +1,11 @@
 {
+  "compilerOptions": {
+    "jsx": "react",
+  },
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node",
     "module": "commonjs",
+    "jsx": "react",
   }
 }

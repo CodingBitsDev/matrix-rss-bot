@@ -2,6 +2,7 @@ import { MatrixBot, initMatrixBot } from "./matrixBot/matrixBot";
 import { WhatsappClient, initWhatsappbot } from "./whatsappBot/whatsappBot";
 
 interface APP {
+  name: string;
   matrixClient?: MatrixBot;
   whatsappClient?: WhatsappClient;
 }
@@ -10,8 +11,10 @@ declare global {
 }
 
 function main(){
-  global.APP = {};
-  global.APP.matrixClient = initMatrixBot();
-  global.APP.whatsappClient = initWhatsappbot();
+  global.APP = {
+    name: "Matrix-Whatsapp-Bot",
+    matrixClient: initMatrixBot(),
+    whatsappClient: initWhatsappbot(),
+  };
 }
 main();

@@ -12,6 +12,7 @@ export interface Command {
   command: string,
   params?: Param[],
   optionalParams?: OptionalParam[],
+  roomType?: "wa" | "matrix" | "all",
   onTrigger: (roomId:  string, event: MessageEvent<any>, msg: string) => CommandResult | Promise<CommandResult>;
 }
 
@@ -40,6 +41,7 @@ export async function iniHandleCommand(client: MatrixBot) {
 }
 
 export async function handleCommands(roomId: string, event: MessageEvent<any>) {
+  console.log("### event", event)
   if(event.sender != APP.matrixClient.matrixUser) return;
   if(event.content.msgtype != "m.text") return;
   const msg = event.content.body;
