@@ -12,6 +12,7 @@ export interface Command {
   command: string,
   params?: Param[],
   optionalParams?: OptionalParam[],
+  namedParams?: NamedParam[],
   roomType?: "wa" | "matrix" | "all",
   onTrigger: (roomId:  string, event: MessageEvent<any>, msg: string) => CommandResult | Promise<CommandResult>;
 }
@@ -21,13 +22,14 @@ type ParamType = "string" | "number";
 export interface Param{
   name: string,
   description: string,
-  type: ParamType
+  type: ParamType,
 }
 
-export interface OptionalParam{
-  name: string,
-  description: string,
-  type: ParamType,
+export interface OptionalParam extends Param{
+  optional: true,
+}
+
+export interface NamedParam extends Param{
   initator: string //e.q.: -i 
 }
 
