@@ -12,6 +12,6 @@ export async function createMatrixRoomFromWA(name: string, whatsappid: string, i
       preset: "private_chat",
       topic: `${isGroup ? "[Group]" : "[Private]"} ${name}`,
   })
-  if(APP.matrixClient.ready) APP.matrixClient.roomHandler.handleRoom(roomId)
+  if(APP.matrixClient.ready) APP.matrixClient.waRoomHandler.handleRoom(roomId)
 }
 ( global as any ).createMatrixRoomFromWA = createMatrixRoomFromWA;

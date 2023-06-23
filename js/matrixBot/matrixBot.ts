@@ -3,13 +3,14 @@ import { MatrixAuth, MatrixClient, AutojoinRoomsMixin, SimpleFsStorageProvider, 
 import { initHandler } from "./handlers/index";
 import { config } from "dotenv";
 import { getUserData } from "../userLoader";
-import { RoomHandler, initRoomHandler } from "./rooomHandler";
+import { RoomHandler, initWaRoomHandler } from "./waRooomHandler";
+import { createMainMatrixRoom } from "../utils/createMainMatrixRoom";
 config();
 
 export interface MatrixBot extends MatrixClient{
   ready: boolean;
   matrixUser: string;
-  roomHandler: RoomHandler;
+  waRoomHandler: RoomHandler;
   getUserData: (userId) => Promise<any>;
 }
 
@@ -33,7 +34,7 @@ export function initMatrixBot() : MatrixBot {
     process.exit();
   }
   client.getUserData = getUserData;
-  initRoomHandler(client)
+  initWaRoomHandler(client)
 
   global.client = client;
   AutojoinRoomsMixin.setupOnClient(client);
@@ -46,6 +47,7 @@ export function initMatrixBot() : MatrixBot {
     client.ready = true;
     client.emit("ready");
     console.log("Bot started!") 
+    createMainMatrixRoom();
   });
 
   return client

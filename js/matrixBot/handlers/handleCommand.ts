@@ -15,7 +15,7 @@ export interface Command {
   optionalParams?: OptionalParam[],
   namedParams?: NamedParam[],
   roomType?: "wa" | "matrix" | "all",
-  onTrigger: (roomId:  string, event: MessageEvent<any>, msg: string) => CommandResult | Promise<CommandResult>;
+  onTrigger: (roomId:  string, event?: MessageEvent<any>, msg?: string) => CommandResult | Promise<CommandResult>;
 }
 
 type ParamType = "string" | "number";
@@ -36,7 +36,7 @@ export interface NamedParam extends Param{
 
 const commandMap : Map<string, Command> = new Map();
 
-export async function iniHandleCommand(client: MatrixBot) {
+export async function initHandleCommand(client: MatrixBot) {
   Object.values( commands ).forEach(command => {
     commandMap.set(command.command, command);
   })

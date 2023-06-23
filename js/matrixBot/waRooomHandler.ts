@@ -14,19 +14,19 @@ export interface Room {
   whatsappId: string | false;
 }
 
-export async function initRoomHandler(client: MatrixBot){
+export async function initWaRoomHandler(client: MatrixBot){
   //Wait for client ready
   await new Promise((res) => client.on("ready", () => { res(true); }))
-  client.roomHandler = {
+  client.waRoomHandler= {
     ready: false,
     rooms: new Map(),
     client,
     handleRoom: handleRoom,
   };
   const rooms = await client.getJoinedRooms();
-  rooms.map(async roomId => await(client.roomHandler.handleRoom(roomId)))
+  rooms.map(async roomId => await(client.waRoomHandler.handleRoom(roomId)))
   await Promise.all(rooms);
-  client.roomHandler.ready = true;
+  client.waRoomHandler.ready = true;
 
   return true;
 }
