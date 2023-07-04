@@ -16,7 +16,6 @@ export function initAuthHandlers(client: WhatsappClient){
     // rawChats.forEach((chat) => {
     //   chats.set(`${chat.id.user}@${chat.id.server}`, chat)
     // })
-    console.log("### chats", chats, orderdChatIds)
     APP.whatsappClient.orderdChatIds = orderdChatIds;
     APP.whatsappClient.chats = chats;
     APP.whatsappClient.ready = true;

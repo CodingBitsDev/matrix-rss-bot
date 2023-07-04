@@ -2,7 +2,7 @@ import { MessageEvent } from "matrix-bot-sdk";
 import { Command, NamedParam, OptionalParam, Param, makeParamsList } from "../handleCommand";
 import * as commands from "./index";
 
-const MAX_CHATS_PER_PAGE = 20;
+const MAX_CHATS_PER_PAGE = 10;
 
 export const listWhatsappRoomsCommand : Command = {
   name: "List Whatsapp Chats",
@@ -38,7 +38,9 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : strin
   const { params, optionalParamsIndex, namedParamsIndex} = makeParamsList(listWhatsappRoomsCommand, event, msg)
   const disablePaging = !!params.find(param => param.initiator == "-a")
   let page = params[0]?.param?.name == "pageNumber" && params[0]?.value;
+  let noPageEntered = false;
   if(!page) {
+    noPageEntered = true;
     page = 1;
   }
 
@@ -49,10 +51,11 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : strin
   const chatIds = APP.whatsappClient.orderdChatIds;
   const selectedChats = [];
   const maxPages = Math.ceil(chatIds.length / MAX_CHATS_PER_PAGE);
-  const startIndex = !disablePaging ? ( page -1 ) * MAX_CHATS_PER_PAGE : 0;
   if(page > maxPages) {
+    result += `<p><b>[Warning]</b> Page <b>${page}</b> does not exists as the maximum number of pages are <b>${maxPages}</b>. We're showing page <b>${maxPages}</b> instead.</p>`
     page = maxPages;
   }
+  const startIndex = !disablePaging ? ( page -1 ) * MAX_CHATS_PER_PAGE : 0;
   const endIndex = !disablePaging ? ( page - 1 ) * MAX_CHATS_PER_PAGE + MAX_CHATS_PER_PAGE : chatIds.length;
   for (let i = startIndex; i < endIndex; i++) {
     const chatId = chatIds[i];
@@ -77,7 +80,10 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : strin
     result += `</li>`
   })
   result += `</ul>`
-  result += `Page <b>${page}/${maxPages}</b>`
+  if(!disablePaging){
+    result += `<p>Page <b>${page}/${maxPages}</b></p>`
+    if(noPageEntered) result += `<p>To show more pages run !lswa [pageNumber].</p>`
+  }
   
   return result;
 }
