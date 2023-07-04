@@ -18,7 +18,7 @@ export interface Command {
   onTrigger: (roomId:  string, event?: MessageEvent<any>, msg?: string) => CommandResult | Promise<CommandResult>;
 }
 
-type ParamType = "string" | "number";
+type ParamType = "string" | "number" | "string | number";
 
 export interface Param{
   name: string,

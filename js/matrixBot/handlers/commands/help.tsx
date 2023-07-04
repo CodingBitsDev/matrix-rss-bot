@@ -1,10 +1,11 @@
 import { MessageEvent } from "matrix-bot-sdk";
 import { Command, NamedParam, OptionalParam, Param } from "../handleCommand";
 import * as commands from "./index";
+const ITEMS_PER_PAGE = 10;
 
 export const helpCommand : Command = {
   name: "Help Command",
-  description: "Command that displays information about all available commands. The optional [command] parameter specifies a command to get extra information on.",
+  description: "Command that displays information about all available commands. The optional [command|pageNumber] parameter specifies a command to get extra information on or a given pagenumber.",
   command: "!help",
   onTrigger: async (roomId: string, event: MessageEvent<any>, msg: string) => {
     console.log("###", "helpCalled", roomId, event);
@@ -13,9 +14,9 @@ export const helpCommand : Command = {
   },
   optionalParams: [
     {
-      name: "command",
-      description: "Command that you want more information on.",
-      type: "string",
+      name: "command | pageNumber",
+      description: " Either a command (e.g !help !into), that you want extra information on, or a number for additional pages.",
+      type: "string | number",
       optional: true,
     },
   ],
@@ -24,12 +25,21 @@ export const helpCommand : Command = {
 function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : string {
   let result = ``;
   let commandList = Object.values(commands).sort((command1, command2) => command1.command.localeCompare(command2.command))
+  // commandList = [...commandList, ...commandList,...commandList,...commandList,...commandList,...commandList,...commandList,...commandList,...commandList,]
   const params = msg.split(" ").slice(1);
-  if(!params[0]){
+  let pageNumber : number = !params[0] ? 1 : Number(params[0]) 
+  pageNumber = Number.isNaN(pageNumber) ? 0 : pageNumber;
+  if(pageNumber){
     result += `<h1>${APP.name}</h1>`
     result += `<p>Thank you for using ${APP.name}. The following commands can be used:</p>`
     result += `<ul>`
-    commandList.forEach(command => {
+    const maxPages = Math.ceil(commandList.length / ITEMS_PER_PAGE);
+    if(pageNumber > maxPages) {
+      result += `<p><b>[Warning]</b> Page <b>${pageNumber}</b> does not exists as the maximum number of pages are <b>${maxPages}</b>. We're showing page <b>${maxPages}</b> instead.</p>`
+      pageNumber = maxPages
+    }
+    commandList.forEach(( command, index ) => {
+      if(index < ITEMS_PER_PAGE * ( pageNumber - 1 ) || index >= ITEMS_PER_PAGE * (pageNumber - 1) +ITEMS_PER_PAGE) return 
       result += `<li>`;
       const params = [
         ...(command.params || []),
@@ -40,6 +50,10 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : strin
       result += `</li>`;
     })
     result += `</ul>`
+    if(maxPages > 1) {
+      result += `<p>Page ${pageNumber} / ${maxPages}</p>`
+      result += `<p>Run <b>!help [pageNumber]</b> for more info</p>`
+    }
     result += `<br>`
     result += `For more information about a spcific command. Run <b>!help [comand]</b>.`
   } else {
