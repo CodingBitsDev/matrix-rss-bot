@@ -8,14 +8,13 @@ export const helpCommand : Command = {
   description: "Command that displays information about all available commands. The optional [command|pageNumber] parameter specifies a command to get extra information on or a given pagenumber.",
   command: "!help",
   onTrigger: async (roomId: string, event: MessageEvent<any>, msg: string) => {
-    console.log("###", "helpCalled", roomId, event);
     await APP.matrixClient.sendHtmlText(roomId, makeAnswerString(roomId, event, msg))
     return true
   },
   optionalParams: [
     {
       name: "command | pageNumber",
-      description: " Either a command (e.g !help !into), that you want extra information on, or a number for additional pages.",
+      description: "Either a command (e.g !help !into), that you want extra information on, or a number for additional pages.",
       type: "string | number",
       optional: true,
     },
@@ -25,7 +24,6 @@ export const helpCommand : Command = {
 function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : string {
   let result = ``;
   let commandList = Object.values(commands).sort((command1, command2) => command1.command.localeCompare(command2.command))
-  // commandList = [...commandList, ...commandList,...commandList,...commandList,...commandList,...commandList,...commandList,...commandList,...commandList,]
   const params = msg.split(" ").slice(1);
   let pageNumber : number = !params[0] ? 1 : Number(params[0]) 
   pageNumber = Number.isNaN(pageNumber) ? 0 : pageNumber;
@@ -57,7 +55,7 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : strin
     result += `<br>`
     result += `For more information about a spcific command. Run <b>!help [comand]</b>.`
   } else {
-    const command = commandList.find(c => c.command == params[0])
+    const command = commandList.find(c => c.command.toLowerCase() == params[0].toLowerCase())
     result += `<h1>${APP.name}</h1>`
     if(!command) {
       result += `<p>Command <b>${params[0]}</b> does not exist. Did you write it correctly?</p>`
@@ -94,7 +92,9 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : strin
 function makeShortParamString(roomId: string, event: MessageEvent<any>, param: Param | OptionalParam | NamedParam) : string {
   let result = ``;
   if( (param as OptionalParam ).optional ) result += `[${param.name}]`;
-  else if( (param as NamedParam ).initiator ) result += `[${( param as NamedParam ).initiator } ${param.name}]`;
+  else if( (param as NamedParam ).initiator ) {
+    result += `[${( param as NamedParam ).initiator }${param.type != "empty" ? " " + param.name : ""}]`;
+  }
   else result += `${param.name}`;
   return result;
 }
@@ -102,7 +102,8 @@ function makeShortParamString(roomId: string, event: MessageEvent<any>, param: P
 function makeLongParamString(roomId: string, event: MessageEvent<any>, param: Param | OptionalParam | NamedParam) : string {
   let result = ``;
   const initiator = (param as NamedParam ).initiator;
-  result += `<b>${initiator ? initiator + " " : ""}${param.name}</b> : `;
+  if(!initiator) result += `<b>${initiator ? initiator + " " : ""}${param.name}</b> : `;
+  else result += `<b>${initiator}${param.type != "empty" ? " " + param.name + " " : ""}</b>: `;
   result += `${param.description}`
   if( (param as OptionalParam ).optional ) {
     result += `<br><b>Required</b>: No`

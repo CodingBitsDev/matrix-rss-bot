@@ -3,7 +3,6 @@ const RECREATE_TIME = 1000
 export async function createMainMatrixRoom(){
     const now = Date.now();
     const rooms = await APP.matrixClient.getJoinedRooms();
-    console.log("### rooms", rooms);
     const mainRoomId = await new Promise(async res => {
         for (let index = 0; index < rooms.length; index++) {
             const roomId = rooms[index];
@@ -36,7 +35,6 @@ export async function createMainMatrixRoom(){
         }
         res(null);
     })
-    console.log("### mainRoom", mainRoomId)
     if(mainRoomId) return mainRoomId
     // return null;
     

@@ -12,6 +12,7 @@ export interface Room {
   name: string,
   members: string[];
   whatsappId: string | false;
+  roomId: string
 }
 
 export async function initWaRoomHandler(client: MatrixBot){
@@ -23,20 +24,21 @@ export async function initWaRoomHandler(client: MatrixBot){
     client,
     handleRoom: handleRoom,
   };
-  const rooms = await client.getJoinedRooms();
-  rooms.map(async roomId => await(client.waRoomHandler.handleRoom(roomId)))
-  await Promise.all(rooms);
+  const orderedRooms = await client.getJoinedRooms();
+  let rooms = orderedRooms.map(async roomId => await(client.waRoomHandler.handleRoom(roomId)))
+  rooms = await Promise.all(rooms);
   client.waRoomHandler.ready = true;
 
   return true;
 }
 
- async function handleRoom(roomId){
+ async function handleRoom(roomId: string){
     const roomState = await this.client.getRoomState(roomId);
     const room : Room = {
       name: "",
       members: [],
       whatsappId: false,
+      roomId,
     }
     roomState.forEach(ev => {
       if(ev.type == "m.room.member") room.members.push(ev.state_key)
@@ -44,4 +46,5 @@ export async function initWaRoomHandler(client: MatrixBot){
       if(ev.type == "c.room.waid") room.whatsappId = ev.content.id;
     })
     this.rooms.set(roomId, room);
+    return room;
  }

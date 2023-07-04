@@ -5,6 +5,7 @@ interface APP {
   name: string;
   matrixClient?: MatrixBot;
   whatsappClient?: WhatsappClient;
+  orderdChatIds?: string[];
 }
 declare global {
   var APP: APP 

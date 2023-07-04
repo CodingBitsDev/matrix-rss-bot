@@ -1,10 +1,11 @@
 import { Client, GroupChat, LocalAuth, PrivateChat } from "whatsapp-web.js";
 import { initHandlers } from "./handlers";
 
-type Chat = PrivateChat | GroupChat;
+export type Chat = PrivateChat | GroupChat;
 
 export interface WhatsappClient extends Client{
   chats?: Map<string, Chat>;
+  orderdChatIds?: string[];
   ready?: boolean,
 }
 
