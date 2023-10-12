@@ -43,7 +43,7 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : strin
         ...(command.params || []),
         ...(command.optionalParams || []),
         ...(command.namedParams || []),
-      ].map(param => makeShortParamString(roomId, event, param)).join(" ");
+      ].map(param => makeShortParamString(param)).join(" ");
       result += `<b>${command.command}</b>${params && " " + params}: <br> ${command.description}`;
       result += `</li>`;
     })
@@ -66,7 +66,7 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : strin
       ...(command.params || []),
       ...(command.optionalParams || []),
       ...(command.namedParams || []),
-    ].map(param => makeShortParamString(roomId, event, param)).join(" ");
+    ].map(param => makeShortParamString(param)).join(" ");
     result += `<p>Command: <b>${command.name} (${command.command})</p>`
     result += `<p>Usage: ${command.command} ${paramListShort}</p>`
     result += `<p>${command.description}</p>`
@@ -75,7 +75,7 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : strin
       ...(command.params || []),
       ...(command.optionalParams || []),
       ...(command.namedParams || []),
-    ].map(param => makeLongParamString(roomId, event, param))
+    ].map(param => makeLongParamString(param))
     if(paramList.length){
       result += "<p><b>Params:</b>"
       result += "<ul>"
@@ -89,7 +89,7 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : strin
   return result;
 }
 
-function makeShortParamString(roomId: string, event: MessageEvent<any>, param: Param | OptionalParam | NamedParam) : string {
+export function makeShortParamString(param: Param | OptionalParam | NamedParam) : string {
   let result = ``;
   if( (param as OptionalParam ).optional ) result += `[${param.name}]`;
   else if( (param as NamedParam ).initiator ) {
@@ -99,7 +99,7 @@ function makeShortParamString(roomId: string, event: MessageEvent<any>, param: P
   return result;
 }
 
-function makeLongParamString(roomId: string, event: MessageEvent<any>, param: Param | OptionalParam | NamedParam) : string {
+function makeLongParamString(param: Param | OptionalParam | NamedParam) : string {
   let result = ``;
   const initiator = (param as NamedParam ).initiator;
   if(!initiator) result += `<b>${initiator ? initiator + " " : ""}${param.name}</b> : `;
@@ -122,5 +122,17 @@ function makeLongParamString(roomId: string, event: MessageEvent<any>, param: Pa
     result += `<br><b>Type</b>: ${param.type}`
     result += "<br><br>"
   }
+  return result;
+}
+
+export function makeCommandShortString(command) : string {
+  let result = ``
+  const params = [
+    ...(command.params || []),
+    ...(command.optionalParams || []),
+    ...(command.namedParams || []),
+  ].map(param => makeShortParamString(param)).join(" ");
+  result += `<b>${command.command}</b>${params && " " + params}: <br> ${command.description}`;
+
   return result;
 }

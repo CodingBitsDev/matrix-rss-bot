@@ -1,11 +1,10 @@
 import { MatrixBot, initMatrixBot } from "./matrixBot/matrixBot";
-import { WhatsappClient, initWhatsappbot } from "./whatsappBot/whatsappBot";
+import { RSSReader, initRSSReader } from "./rss/rss";
 
 interface APP {
   name: string;
   matrixClient?: MatrixBot;
-  whatsappClient?: WhatsappClient;
-  orderdChatIds?: string[];
+  rssReader?: RSSReader;
 }
 declare global {
   var APP: APP 
@@ -13,9 +12,9 @@ declare global {
 
 function main(){
   global.APP = {
-    name: "Matrix-Whatsapp-Bot",
+    name: "Matrix-RSS-Bot",
     matrixClient: initMatrixBot(),
-    whatsappClient: initWhatsappbot(),
   };
+  initRSSReader().then(reader => global.APP.rssReader = reader)
 }
 main();

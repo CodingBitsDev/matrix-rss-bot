@@ -1,6 +1,7 @@
 import { MessageEvent } from "matrix-bot-sdk";
 import { Command, NamedParam, OptionalParam, Param } from "../handleCommand";
 import * as commands from "./index";
+import { makeCommandShortString, makeShortParamString } from "./help";
 
 export const introCommand : Command = {
   name: "App Intro Command",
@@ -16,12 +17,6 @@ function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : strin
   let result = ``;
   result += `<h1>${APP.name}</h1>`
   result += `<p>Thank you for using ${APP.name}.</p>`
-  result += `<p>The ${APP.name} is now ready. You can just wait to receive Whatsapp Messages right in Matrix, or use the commands bellow to create matrix channels directly.</p>`
-  result += `<p>Here is a list of commands to get you started:</p>`
-  result += `<ul>`
-  result += `<li>TODO</li>`
-  result += `</ul>`
-  result += `<p>For more detailed info of the commands run !help [command]. For more detailed info in generall run !help.`
 
   return result;
 }
