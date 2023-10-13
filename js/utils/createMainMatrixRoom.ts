@@ -11,7 +11,6 @@ export async function createMainMatrixRoom(){
             let creationTime = 0;
             let members = [];
             roomState.forEach(ev => {
-                // console.log("###ev", ev)
                 if(ev.type == "m.room.member") {
                     const membership = ev.content?.membership
                     if(membership == "join") members.push(ev.state_key);

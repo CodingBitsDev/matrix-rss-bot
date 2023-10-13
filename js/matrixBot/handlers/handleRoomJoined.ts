@@ -17,5 +17,6 @@ async function handleJoined(roomId: string, event: any) {
 
   if(event?.type == "m.room.member" && event?.content?.membership == "join"){
     await introCommand.onTrigger(roomId, undefined, undefined );
+    APP.matrixClient.rssSystem.run(roomId);
   }
 }

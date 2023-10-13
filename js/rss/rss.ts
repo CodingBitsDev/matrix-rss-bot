@@ -21,7 +21,6 @@ export async function initRSSReader() : Promise<RSSReader> {
       let lastRead = await store.getItem(readKey);
       const feed = await parser.parseURL("https://events.ccc.de/feed")
       const items = feed?.items || [];
-      console.log("### readItems", feed, items, lastRead)
 
       const now = Date.now();
       await store.setItem(readKey, now);

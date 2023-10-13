@@ -5,12 +5,14 @@ import { config } from "dotenv";
 import { getUserData } from "../userLoader";
 import { RoomHandler, initWaRoomHandler } from "./waRooomHandler";
 import { createMainMatrixRoom } from "../utils/createMainMatrixRoom";
+import { RssSystem, createRssSystem } from "./RssSystem";
 config();
 
 export interface MatrixBot extends MatrixClient{
   ready: boolean;
   matrixUser: string;
   waRoomHandler: RoomHandler;
+  rssSystem: RssSystem;
   getUserData: (userId) => Promise<any>;
 }
 
@@ -43,12 +45,17 @@ export function initMatrixBot() : MatrixBot {
   initHandler(client);
 
   // Now that everything is set up, start the bot. This will start the sync loop and run until killed.
-  client.start().then(() => {
+  client.start().then(async () => {
     client.ready = true;
     client.emit("ready");
     console.log("Bot started!") 
-    createMainMatrixRoom();
+
+    const joinedRooms = await client.getJoinedRooms();
+    joinedRooms.forEach(room => client.rssSystem.run(room));
+    // createMainMatrixRoom();
   });
+
+  client.rssSystem = createRssSystem();
 
   return client
 }

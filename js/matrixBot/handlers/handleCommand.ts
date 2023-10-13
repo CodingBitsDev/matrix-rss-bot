@@ -48,11 +48,13 @@ export async function initHandleCommand(client: MatrixBot) {
 export async function handleCommands(roomId: string, event: MessageEvent<any>) {
   if(event.sender != APP.matrixClient.matrixUser) return;
   if(event.content.msgtype != "m.text") return;
-  const msg = event.content.body;
+  const msg = event.content.body
+  if(!msg.startsWith("!")) return;
   const firstWord = msg.replace(/ .*/,'');
 
   const command = commandMap.get(firstWord.toLowerCase());
   if(!command) {
+    return //TODO Potentially add
     let result = ``;
     result += `<p>Command <b>${firstWord}</b> does not exist. Did you write it correctly?</p>`
     result += `<p>If you are looking for general help or a list of commands try typing <b>!help</b> without any param.`

@@ -16,7 +16,7 @@ export const introCommand : Command = {
 function makeAnswerString(roomId: string, event: MessageEvent<any>, msg) : string {
   let result = ``;
   result += `<h1>${APP.name}</h1>`
-  result += `<p>Thank you for using ${APP.name}.</p>`
+  result += `<p>Thank you for using  Renji's ${APP.name}.</p>`
 
   return result;
 }
