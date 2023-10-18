@@ -4,8 +4,6 @@ import * as fs from "fs";
 const path = require('path');
 const appRoot = path.resolve(__dirname);
 
-
-
 async function main() {
   try{
     let type = "";

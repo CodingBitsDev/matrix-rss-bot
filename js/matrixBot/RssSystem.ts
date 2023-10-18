@@ -8,7 +8,8 @@ export interface RssSystem {
 export function createRssSystem(){
   const rssSystem : RssSystem = {
     runningTimeouts: new Map(),
-    tickTime: 30000, // 30sec
+    // tickTime: 30000, // 30sec
+    tickTime: 3600000, // 1h
     run: (room) => {
       const runFunction = async () => {
         const runningRuningTimeout = rssSystem.runningTimeouts.get(room);
@@ -40,7 +41,7 @@ export function createRssSystem(){
         
         rssSystem.runningTimeouts.set(room, setTimeout(runFunction, rssSystem.tickTime))
       } 
-      rssSystem.runningTimeouts.set(room, setTimeout(runFunction, rssSystem.tickTime))
+      rssSystem.runningTimeouts.set(room, setTimeout(runFunction, 0))
     },
     stop: (room) => {
       const runningRuningTimeout = rssSystem.runningTimeouts.get(room);
